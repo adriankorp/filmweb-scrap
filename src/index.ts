@@ -44,7 +44,7 @@ const getMovieRating = ($: cheerio.CheerioAPI, movie: cheerio.Element) => {
 
 const getTopTenMovies = async (url: string | undefined, year: string) => {
     if (!url) {
-        return;
+        return [];
     }
     const html = await getHtml(`${URL}${url}/${year}`);
     const $ = cheerio.load(html);
@@ -63,8 +63,7 @@ const getTopTenMovies = async (url: string | undefined, year: string) => {
             return movie;
         })
         .get();
-
-    console.log(moviesData);
+    return moviesData;
 };
 
 const getActualYear = () => {
@@ -77,9 +76,9 @@ const main = async () => {
     const providers = await getTopFourProviders();
     const actualYear = getActualYear();
 
-    const moviesData = Promise.all(
+    const moviesData = await Promise.all(
         providers.map(async (provider) => {
-            await getTopTenMovies(provider.providerUrl, actualYear);
+            return getTopTenMovies(provider.providerUrl, actualYear);
         }),
     );
     console.log(moviesData);
