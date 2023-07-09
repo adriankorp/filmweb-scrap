@@ -1,87 +1,26 @@
-import axios from 'axios';
-import * as cheerio from 'cheerio';
-
-const URL_RANKING = 'https://www.filmweb.pl/ranking/vod/film';
-const URL = 'https://www.filmweb.pl';
-
-const getHtml = async (url: string) => {
-    const { data } = await axios.get(url);
-    return data;
-};
-
-const getTopFourProviders = async () => {
-    const html = await getHtml(URL_RANKING);
-    const $ = cheerio.load(html);
-    const providerList = $('.rankingProvider__list');
-    const providersLi = providerList.find('li');
-    const topFourProviders = providersLi.slice(0, 4);
-
-    const providers = topFourProviders
-        .map((i, el) => {
-            const providerName = $(el).find('a').attr('title');
-            const providerUrl = $(el).find('a').attr('href');
-            const provider = {
-                providerName,
-                providerUrl,
-            };
-            return provider;
-        })
-        .get();
-
-    console.log(providers);
-    return providers;
-};
-
-const getMovieTitle = ($: cheerio.CheerioAPI, movie: cheerio.Element) => {
-    const title = $(movie).find('.rankingType__title').find('a').text();
-    return title;
-};
-
-const getMovieRating = ($: cheerio.CheerioAPI, movie: cheerio.Element) => {
-    const rating = $(movie).find('.rankingType__rate--value').text();
-    return rating;
-};
-
-const getTopTenMovies = async (url: string | undefined, year: string) => {
-    if (!url) {
-        return [];
-    }
-    const html = await getHtml(`${URL}${url}/${year}`);
-    const $ = cheerio.load(html);
-    const moviesList = $('.rankingTypeSection__container');
-    const movies = moviesList.find('.rankingType.hasVod');
-    const topTenMovies = movies.slice(0, 10);
-
-    const moviesData = topTenMovies
-        .map((i, el) => {
-            const title = getMovieTitle($, el);
-            const rating = getMovieRating($, el);
-            const movie = {
-                title,
-                rating,
-            };
-            return movie;
-        })
-        .get();
-    return moviesData;
-};
-
-const getActualYear = () => {
-    const date = new Date();
-    const year = date.getFullYear();
-    return year.toString();
-};
+import * as fcs from './functions';
 
 const main = async () => {
-    const providers = await getTopFourProviders();
-    const actualYear = getActualYear();
+    const providers = await fcs.getTopFourProviders();
+
+    const currentYear = fcs.getCurrentYear();
 
     const moviesData = await Promise.all(
         providers.map(async (provider) => {
-            return getTopTenMovies(provider.providerUrl, actualYear);
+            const parsedProviderName = fcs.parseProviderName(
+                provider.providerName,
+            );
+            return fcs.getTopTenMovies(
+                provider.providerUrl,
+                currentYear,
+                parsedProviderName,
+            );
         }),
     );
-    console.log(moviesData);
+    const parsedMoviesData = fcs.parseMoviesData(moviesData);
+    const sortedMoviesData = fcs.sortMoviesByRating(parsedMoviesData);
+    const checkedDuplicates = fcs.checkDuplicates(sortedMoviesData);
+    await fcs.saveToCsv(checkedDuplicates);
 };
 
 main();
