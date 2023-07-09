@@ -100,10 +100,8 @@ const parseProviderName = (providerName: string | undefined) => {
 };
 
 const parseMoviesData = (moviesData: Movie[][]) => {
-    // make flat array
     const flatMoviesData = moviesData.flat();
 
-    // add floating point to rating
     const parsedMoviesData = flatMoviesData.map((movie) => {
         const parsedMovie = {
             ...movie,
@@ -115,7 +113,6 @@ const parseMoviesData = (moviesData: Movie[][]) => {
 };
 
 const sortMoviesByRating = (moviesData: ParsedMovie[]) => {
-    // sort in descending order
     const sortedMoviesData = moviesData.sort((a, b) => {
         return b.floatRating - a.floatRating;
     });
@@ -123,7 +120,6 @@ const sortMoviesByRating = (moviesData: ParsedMovie[]) => {
 };
 
 const checkDuplicates = (moviesData: ParsedMovie[]) => {
-    // if there are duplicates, delete  duplicates with lower rating
     const checkedDuplicates = moviesData.reduce((acc, movie) => {
         if (acc.has(movie.title)) {
             const accMovie = acc.get(movie.title);

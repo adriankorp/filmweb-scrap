@@ -63,7 +63,7 @@ describe('functions tests', () => {
         expect(result).toEqual([]);
     });
     // Tests that when the '.rankingProvider__list' element contains less than 4 'li' elements, the function returns an array with length less than 4
-    it('test_edge_case_ranking_provider_list_less_than_4_li_elements_returns_array_with_length_less_than_4', async () => {
+    test('test_edge_case_ranking_provider_list_less_than_4_li_elements_returns_array_with_length_less_than_4', async () => {
         const html = '<html><body><div class="rankingProvider__list"><ul><li></li><li></li></ul></div></body></html>';
         jest.spyOn(axios, 'get').mockResolvedValue({ data: html });
         const result = await getTopFourProviders();
@@ -151,7 +151,7 @@ describe('functions tests', () => {
         expect(movies).toEqual([]);
     });
     // Tests that the returned movies have the correct providerName
-    it('test_correct_provider_name', async () => {
+    test('test_correct_provider_name', async () => {
         const movies = await getTopTenMovies(
             '/ranking/film',
             '2021',
@@ -247,7 +247,7 @@ describe('functions tests', () => {
     });
 
     // Tests that the function sorts an array of movies with different ratings in descending order
-    it('test_different_ratings', () => {
+    test('test_different_ratings', () => {
         const moviesData = [
             {
                 title: 'Movie A',
@@ -291,7 +291,7 @@ describe('functions tests', () => {
         ]);
     });
     // Tests that the function sorts an array of movies with same ratings in descending order
-    it('test_same_ratings', () => {
+    test('test_same_ratings', () => {
         const moviesData = [
             {
                 title: 'Movie A',
@@ -335,18 +335,18 @@ describe('functions tests', () => {
         ]);
     });
     // Tests that the function returns an empty array when given an empty array
-    it('test_empty_array', () => {
+    test('test_empty_array', () => {
         const moviesData: ParsedMovie[] = [];
         const sortedMoviesData = sortMoviesByRating(moviesData);
         expect(sortedMoviesData).toEqual([]);
     });
-    it('test_empty_array', () => {
+    test('test_empty_array', () => {
         const input: ParsedMovie[] = [];
         const output = checkDuplicates(input);
         expect(output).toEqual([]);
     });
     // Tests that function returns the same array when an array of unique movies is passed as input
-    it('test_unique_movies', () => {
+    test('test_unique_movies', () => {
         const input = [
             {
                 title: 'Movie 1',
@@ -371,7 +371,7 @@ describe('functions tests', () => {
         expect(output).toEqual(input);
     });
     // Tests that function removes duplicates with lower ratings when an array of movies with duplicates and different ratings is passed as input
-    it('test_duplicates_different_ratings', () => {
+    test('test_duplicates_different_ratings', () => {
         const input = [
             {
                 title: 'Movie 1',
@@ -409,7 +409,7 @@ describe('functions tests', () => {
         ]);
     });
     // Tests that function removes duplicates with lower ratings when an array of movies with duplicates and same ratings is passed as input
-    it('test_duplicates_same_ratings', () => {
+    test('test_duplicates_same_ratings', () => {
         const input = [
             {
                 title: 'Movie 1',
@@ -447,7 +447,7 @@ describe('functions tests', () => {
         ]);
     });
     // Tests that function removes duplicates with lower ratings when an array of movies with duplicates and all same ratings is passed as input
-    it('test_duplicates_all_same_ratings', () => {
+    test('test_duplicates_all_same_ratings', () => {
         const input = [
             {
                 title: 'Movie 1',
@@ -479,7 +479,7 @@ describe('functions tests', () => {
         ]);
     });
     // Tests that function removes duplicates with lower ratings when an array of movies with duplicates and all different ratings is passed as input
-    it('test_duplicates_all_different_ratings', () => {
+    test('test_duplicates_all_different_ratings', () => {
         const input = [
             {
                 title: 'Movie 1',
@@ -523,7 +523,7 @@ describe('functions tests', () => {
         ]);
     });
     // Tests that saveToCsv function saves the CSV file to disk
-    it('test_save_to_csv_saves_file_to_disk', async () => {
+    test('test_save_to_csv_saves_file_to_disk', async () => {
         const moviesData = [
             {
                 title: 'Movie 1',
@@ -543,7 +543,7 @@ describe('functions tests', () => {
         expect(csv).toBeDefined();
     });
     // Tests that saveToCsv function correctly formats the CSV objects
-    it('test_save_to_csv_formats_csv_objects_correctly', async () => {
+    test('test_save_to_csv_formats_csv_objects_correctly', async () => {
         const moviesData = [
             {
                 title: 'Movie 1',
@@ -565,7 +565,7 @@ describe('functions tests', () => {
         expect(csv).toContain('Movie 2,Provider 2,3.2');
     });
     // Tests that saveToCsv function handles empty input array
-    it('test_save_to_csv_handles_empty_input_array', async () => {
+    test('test_save_to_csv_handles_empty_input_array', async () => {
         const moviesData: ParsedMovie[] = [];
         await saveToCsv(moviesData);
         const csv = await fs.promises.readFile('./movies.csv', 'utf-8');
